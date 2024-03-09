@@ -12,6 +12,15 @@ def read_root():
 
 @app.post("/webhook/resend")
 async def receive_resend_notification(request: Request):
+    """
+    Receive a webhook payload and process it asynchronously.
+
+    Args:
+        payload (WebhookPayload): The webhook payload to process.
+
+    Returns:
+        dict: A dictionary with a single key "status" and value "received".
+    """
     payload = await request.json()
     try:
         process_webhook_payload.delay(payload)
