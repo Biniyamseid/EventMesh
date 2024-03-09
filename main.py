@@ -1,4 +1,7 @@
+
+from datetime import datetime
 import logging
+from typing import Optional
 from fastapi import FastAPI, Request, HTTPException
 from celery.exceptions import Retry
 from celery_worker import process_webhook_payload
@@ -28,3 +31,22 @@ async def receive_resend_notification(request: Request):
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
     return {"status": "received"}
+
+from fastapi import Query
+from database.clickhouse import get_all_payloads, query_payloads
+
+@app.get("/query")
+async def query_payloads_endpoint(
+    sender: str,
+    recipient: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None)
+):
+    results = query_payloads(sender, recipient, status, start_date, end_date)
+    return {"payloads": results}
+
+@app.get("/query/all")
+async def query_all_payloads_endpoint():
+    results = get_all_payloads()
+    return {"payloads": results}
