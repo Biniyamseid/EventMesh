@@ -227,7 +227,7 @@ def read_root():
 def validate_payload(payload):
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
-    payload = payload.dict()
+    payload = payload
     if not isinstance(payload, dict):
         return False
 
