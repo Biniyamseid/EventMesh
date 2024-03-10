@@ -35,7 +35,6 @@ def validate_payload(payload):
 @app.post("/webhook/resend")
 async def receive_resend_notification(request: Request):
     """
-    updated
     Receive a webhook payload and process it asynchronously.
 
     Args:
@@ -44,7 +43,11 @@ async def receive_resend_notification(request: Request):
     Returns:
         dict: A dictionary with a single key "status" and value "received".
     """
-    payload = await request.json()
+    try:
+        payload = await request.json()
+    except Exception:
+        return {"status": "false", "detail": "No JSON payload received"}
+
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
