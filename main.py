@@ -43,11 +43,7 @@ async def receive_resend_notification(request: Request):
     Returns:
         dict: A dictionary with a single key "status" and value "received".
     """
-    try:
-        payload = await request.json()
-    except Exception:
-        return {"status": "false", "detail": "No JSON payload received"}
-
+    payload = await request.json()
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
@@ -58,6 +54,10 @@ async def receive_resend_notification(request: Request):
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
     return {"status": "received"}
+
+
+
+
 
 @app.get("/query")
 async def query_payloads_endpoint(
