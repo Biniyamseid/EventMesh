@@ -272,6 +272,7 @@ async def receive_resend_notification(request: Request):
 
 @app.get("/task/{task_id}")
 async def get_task_result(task_id: str):
+    logger.info("**get_task_result called")
     result = AsyncResult(task_id, app=celery_app)
     if result.ready():
         return {"status": result.status, "result": result.result}
