@@ -35,6 +35,7 @@ def validate_payload(payload):
 @app.post("/webhook/resend")
 async def receive_resend_notification(request: Request):
     """
+    updated
     Receive a webhook payload and process it asynchronously.
 
     Args:
