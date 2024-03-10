@@ -8,21 +8,21 @@ services:
       - 8000:8000
     depends_on:
       - redis
-      - clickhouse
+      - resend_webhook_clickhouse
 
   worker:
     build: .
     command: celery -A celery_worker.app worker --loglevel=info
     depends_on:
       - redis
-      - clickhouse
+      - resend_webhook_clickhouse
 
   redis:
     image: redis:latest
     volumes:
       - redis-data:/data
 
-  clickhouse:
+  resend_webhook_clickhouse:
     image: yandex/clickhouse-server:latest
     volumes:
       - clickhouse-data:/var/lib/clickhouse
@@ -30,3 +30,37 @@ services:
 volumes:
   redis-data:
   clickhouse-data:
+
+# version: '3.8'
+
+# services:
+#   web:
+#     build: .
+#     command: uvicorn main:app --host 0.0.0.0 --port 8000
+#     ports:
+#       - 8000:8000
+#     depends_on:
+#       - redis
+#       - clickhouse
+
+#   worker:
+#     build: .
+#     command: celery -A celery_worker.app worker --loglevel=info
+#     depends_on:
+#       - redis
+#       - clickhouse
+
+#   redis:
+#     image: redis:latest
+#     volumes:
+#       - redis-data:/data
+
+#   clickhouse:
+#     image: yandex/clickhouse-server:latest
+#     volumes:
+#       - clickhouse-data:/var/lib/clickhouse
+
+# volumes:
+#   redis-data:
+#   clickhouse-data:
+
