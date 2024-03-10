@@ -448,7 +448,7 @@ def insert_h_data():
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to insert hardcoded data: {e}")
+        logger.error(f"Failed to insert  data: {e}")
         raise
 
 
