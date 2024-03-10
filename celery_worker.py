@@ -42,7 +42,7 @@ insert_h_data()
 # @app.task
 # def process_webhook_payload(payload):
 @app.task
-def insert_hardcoded_data(payload):
+def insert_hardcoded_data(p):
     payload = {
         "created_at": "2024-03-10T11:41:31.198Z",
         "data": {
