@@ -255,6 +255,7 @@ async def receive_resend_notification(request: Request):
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
+            return payload
             process_webhook_payload.delay(payload)
         else:
             return {"status": "false"}
