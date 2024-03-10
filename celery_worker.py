@@ -26,4 +26,5 @@ insert_h_data()
 
 @app.task
 def process_webhook_payload(payload):
+    return payload
     insert_payload(payload)
