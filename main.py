@@ -91,7 +91,7 @@ async def receive_resend_notification(payload: WebhookPayload):
             return {"status": "false", "detail": "Invalid payload"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e,t}")
-        raise HTTPException(status_code=500, detail="Failed to process payload")
+        raise HTTPException(status_code=500, detail=f"Failed to process payload: {e,t}")
     return {"status": "received"}
 
 
