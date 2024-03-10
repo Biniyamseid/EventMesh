@@ -50,6 +50,7 @@ def validate_payload(payload: WebhookPayload):
     data_keys = ["created_at", "email_id", "from_", "subject", "to"]
 
     # payload_dict = payload.model_dump()
+    payload_dict = payload
 
     missing_keys = [key for key in required_keys if key not in payload_dict]
     if missing_keys:
