@@ -227,7 +227,7 @@ def read_root():
 def validate_payload(payload):
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
-
+    payload = payload.dict()
     if not isinstance(payload, dict):
         return False
 
@@ -257,7 +257,6 @@ async def receive_resend_notification(request: Request):
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
-      
             task = process_webhook_payload.delay(payload)
             return {"status": "received", "task_id": task.id}
         else:
