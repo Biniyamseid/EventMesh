@@ -135,6 +135,19 @@ import logging
 logger = logging.getLogger(__name__)
 client = Client('resend_webhook_clickhouse')
 
+
+
+def test_database_connection():
+    try:
+        result = client.execute('SELECT 1')
+        logger.info(f"Database connection test result: {result}")
+    except errors.Error as e:
+        logger.error(f"Failed to connect to database: {e}")
+        return {"status": "false", "detail": "database connection failed"}
+        # raise
+        
+test_database_connection()
+
 def create_database():
     try:
         logger.info("Creating database...")
