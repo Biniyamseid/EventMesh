@@ -47,7 +47,7 @@ def read_root():
 
 def validate_payload(payload: WebhookPayload):
     required_keys = ["created_at", "data", "type"]
-    data_keys = ["created_at", "email_id", "from_", "subject", "to"]
+    data_keys = ["created_at", "email_id", "from_","from", "subject", "to"]
 
     # payload_dict = payload.model_dump()
     payload_dict = payload
