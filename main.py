@@ -74,6 +74,7 @@ async def receive_resend_notification(payload: WebhookPayload):
     Returns:
         dict: A dictionary with a single key "status" and value "received".
     """
+    t = "out of the block"
     try:
         # payload = await request.json()
         payload = payload
@@ -83,11 +84,13 @@ async def receive_resend_notification(payload: WebhookPayload):
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
+            t= "inside the block"
             process_webhook_payload.delay(payload)
+            
         else:
             return {"status": "false", "detail": "Invalid payload"}
     except Exception as e:
-        logger.error(f"Failed to process payload: {e}")
+        logger.error(f"Failed to process payload: {e,t}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
     return {"status": "received"}
 
