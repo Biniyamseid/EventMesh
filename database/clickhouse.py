@@ -5,10 +5,9 @@ from datetime import datetime, timezone
 
 # client = Client('localhost')
 client = Client('clickhouse')
+# -----------------------------------
 def create_database():
     client.execute('CREATE DATABASE IF NOT EXISTS webhook')
-
-
 
 def create_table():
     client.execute('''
@@ -16,53 +15,39 @@ def create_table():
             id UUID,
             sender String,
             recipient String,
-            status String,
-            payload String,
+            subject String,
+            html String,
             created_at DateTime('UTC')
         ) ENGINE = MergeTree()
         ORDER BY created_at
     ''')
 
-# ---------------------------------------------------------------
-# def create_database():
-#     client.execute('DROP DATABASE IF EXISTS webhook')
-#     client.execute('CREATE DATABASE webhook')
-
-# def create_table():
-#     client.execute('DROP TABLE IF EXISTS webhook.payloads')
-#     client.execute('''
-#         CREATE TABLE webhook.payloads (
-#             id UUID,
-#             sender String,
-#             recipient String,
-#             status String,
-#             payload String,
-#             created_at DateTime('UTC')
-#         ) ENGINE = MergeTree()
-#         ORDER BY created_at
-#     ''')
-
-# ------------------------------------------
-
-# def create_table():
-#     client.execute('''
-#         CREATE TABLE IF NOT EXISTS webhook.payloads (
-#             id UUID,
-#             payload String,
-#             created_at DateTime('UTC')
-#         ) ENGINE = MergeTree()
-#         ORDER BY created_at
-#     ''')
-    
 def insert_payload(payload):
+    # Parse the payload
+    sender = payload.get("from")
+    recipient = payload.get("to")
+    subject = payload.get("subject")
+    html = payload.get("html")
+
+    # Check if sender is present
+    if not sender:
+        raise ValueError("Payload must include a 'from' value")
+
+    # Generate id and created_at values
     id = uuid4()
     created_at = datetime.now(timezone.utc)
-    client.execute('INSERT INTO webhook.payloads (id, sender, recipient, status, payload, created_at) VALUES', [(id, payload['sender'], payload['recipient'], payload['status'], payload['payload'], created_at)])
 
-# def insert_payload(payload):
-#     id = uuid4()
-#     created_at = datetime.now(timezone.utc)
-#     client.execute('INSERT INTO webhook.payloads (id, payload, created_at) VALUES', [(id, payload, created_at)])
+    # Insert into database
+    client.execute(
+        'INSERT INTO webhook.payloads (id, sender, recipient, subject, html, created_at) VALUES',
+        [(id, sender, recipient, subject, html, created_at)]
+    )
+
+
+
+    
+
+
 
 def get_payloads():
     return client.execute('SELECT * FROM webhook.payloads')
