@@ -22,7 +22,7 @@ app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhoo
 
 create_database()
 create_table()
-insert_h_data()
+# insert_h_data()
 # insert_payload(    payload = {
 #         "created_at": "2024-03-10T11:41:31.198Z",
 #         "data": {
@@ -49,7 +49,7 @@ def process_webhook_payload(payload):
             "from": "onboarding@resend.dev",
             "subject": "new 2",
             "to": [
-                "ethioartificialintelligence@gmail.com"
+                "on@shop.com"
             ]
         },
         "type": "email.delivered"
