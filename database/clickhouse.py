@@ -259,9 +259,9 @@ from uuid import uuid4
 from datetime import datetime, timezone
 
 # client = Client('localhost')
-# client = Client('resend_webhook_clickhouse')
+client = Client('resend_webhook_clickhouse')
 # client = Client('clickhouse')
-client = Client('clickhouse')
+# client = Client('clickhouse')
 
 # -----------------------------------
 
