@@ -4,7 +4,7 @@ from uuid import uuid4
 from datetime import datetime, timezone
 
 # client = Client('localhost')
-client = Client('resend_webhook_clickhouse', port=8123)
+client = Client('resend_webhook_clickhouse')
 # -----------------------------------
 def create_database():
     client.execute('CREATE DATABASE IF NOT EXISTS webhook')
