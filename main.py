@@ -263,7 +263,7 @@ async def receive_resend_notification(request: Request):
             return {"status": "false"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
-        raise HTTPException(status_code=500, detail="Failed to process payload")
+        raise HTTPException(status_code=500, detail= f"Failed to process payload{e}")
     return {"status": "received"}
 
 
