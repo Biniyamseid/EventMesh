@@ -253,8 +253,11 @@ async def receive_resend_notification(request: Request):
     Returns:
         dict: A dictionary with a single key "status" and value "received".
     """
-    payload = await request.json()
-    logger.info(f"WebhookPayload received: {payload}")
+    try:
+        payload = await request.json()
+        logger.info(f"WebhookPayload received: {payload}")
+    except Exception as e:
+        return {"status": "false", "detail": "Invalid JSON payload"}
     try:
         if payload and validate_payload(payload):
             task = process_webhook_payload.delay(payload)
