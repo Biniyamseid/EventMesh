@@ -15,8 +15,9 @@
 
 from celery import Celery
 from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
+app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhook_redis_server:6379/0')
 
-app = Celery('tasks', broker='redis://redis:6379/0', backend='db+sqlite:////app/results.db')
+# app = Celery('tasks', broker='redis://redis:6379/0', backend='db+sqlite:////app/results.db')
 # app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhook_redis_server:6379/0',backend='db+sqlite:///results.sqlite3')
 # app = Celery('tasks', broker='redis://localhost:6379/0')
 # app = Celery('tasks', broker='redis://redis:6379/0')
