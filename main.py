@@ -10,6 +10,21 @@ from database.clickhouse import get_all_payloads, query_payloads
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
+from pydantic import BaseModel
+from typing import List
+
+class EmailData(BaseModel):
+    created_at: str
+    email_id: str
+    from_: str
+    subject: str
+    to: List[str]
+
+class WebhookPayload(BaseModel):
+    created_at: str
+    data: EmailData
+    type: str
+
 
 
 @app.get("/")
@@ -37,7 +52,7 @@ def validate_payload(payload):
 
 
 @app.post("/webhook/resend")
-async def receive_resend_notification(request: Request):
+async def receive_resend_notification(payload: WebhookPayload):
     """
     Receive a webhook payload and process it asynchronously.
 
@@ -48,7 +63,8 @@ async def receive_resend_notification(request: Request):
         dict: A dictionary with a single key "status" and value "received".
     """
     try:
-        payload = await request.json()
+        # payload = await request.json()
+        payload = payload
     except Exception:
         return {"status": "false", "detail": "Invalid JSON payload"}
 
