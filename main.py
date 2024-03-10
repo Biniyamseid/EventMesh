@@ -161,7 +161,8 @@ def validate_payload(payload: WebhookPayload):
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
 
-    payload_dict = payload.dict()
+    # payload_dict = payload.dict()
+    payload_dict = payload
 
     missing_keys = [key for key in required_keys if key not in payload_dict]
     if missing_keys:
