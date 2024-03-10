@@ -217,6 +217,7 @@ from celery.exceptions import Retry
 from celery_worker import process_webhook_payload
 from fastapi import Query
 from database.clickhouse import get_all_payloads, query_payloads
+from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
@@ -260,6 +261,7 @@ async def receive_resend_notification(request: Request):
         return {"status": "false", "detail": "Invalid JSON payload"}
     try:
         if payload and validate_payload(payload):
+            insert_payload(payload)
             task = process_webhook_payload.delay(payload)
             return {"status": "received", "task_id": task.id}
         else:
