@@ -22,7 +22,7 @@ app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhoo
 
 create_database()
 create_table()
-insert_h_data.delay()
+# insert_h_data
 # insert_payload(    payload = {
 #         "created_at": "2024-03-10T11:41:31.198Z",
 #         "data": {

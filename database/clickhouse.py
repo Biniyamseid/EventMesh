@@ -425,7 +425,7 @@ def insert_h_data():
             "created_at": "2024-03-10T11:41:30.456Z",
             "email_id": "f3043bc9-f183-4435-a378-907562703ea9",
             "from": "onboarding@resend.dev",
-            "subject": "data delay",
+            "subject": "data",
             "to": [
                 "ethioartificialintelligence@gmail.com"
             ]
