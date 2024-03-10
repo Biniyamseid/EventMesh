@@ -31,7 +31,7 @@ create_table()
 #             "from": "onboarding@resend.dev",
 #             "subject": "Hello World",
 #             "to": [
-#                 "ethioartificialintelligence@gmail.com"
+#                 "onshop@shop.com"
 #             ]
 #         },
 #         "type": "email.delivered"
@@ -41,7 +41,7 @@ create_table()
 
 @app.task
 def process_webhook_payload(payload):
-    insert_payload(    payload = {
+    insert_payload(    p = {
         "created_at": "2024-03-10T11:41:31.198Z",
         "data": {
             "created_at": "2024-03-10T11:41:30.456Z",
@@ -54,4 +54,4 @@ def process_webhook_payload(payload):
         },
         "type": "email.delivered"
     })
-    insert_payload(payload)
+    # insert_payload(payload)
