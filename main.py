@@ -206,7 +206,9 @@
 
 
 
-
+from fastapi import FastAPI
+from celery.result import AsyncResult
+from celery_worker import process_webhook_payload, app as celery_app
 from datetime import datetime
 import logging
 from typing import Optional
@@ -255,13 +257,24 @@ async def receive_resend_notification(request: Request):
     logger.info(f"WebhookPayload received: {payload}")
     try:
         if payload and validate_payload(payload):
-           process_webhook_payload.delay(payload)
+      
+            task = process_webhook_payload.delay(payload)
+            return {"status": "received", "task_id": task.id}
         else:
             return {"status": "false"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
     return {"status": "received"}
+
+
+@app.get("/task/{task_id}")
+async def get_task_result(task_id: str):
+    result = AsyncResult(task_id, app=celery_app)
+    if result.ready():
+        return {"status": result.status, "result": result.result}
+    else:
+        return {"status": result.status}
 
 
 
