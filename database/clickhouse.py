@@ -23,6 +23,27 @@ def create_table():
         ORDER BY created_at
     ''')
 
+# ---------------------------------------------------------------
+# def create_database():
+#     client.execute('DROP DATABASE IF EXISTS webhook')
+#     client.execute('CREATE DATABASE webhook')
+
+# def create_table():
+#     client.execute('DROP TABLE IF EXISTS webhook.payloads')
+#     client.execute('''
+#         CREATE TABLE webhook.payloads (
+#             id UUID,
+#             sender String,
+#             recipient String,
+#             status String,
+#             payload String,
+#             created_at DateTime('UTC')
+#         ) ENGINE = MergeTree()
+#         ORDER BY created_at
+#     ''')
+
+# ------------------------------------------
+
 # def create_table():
 #     client.execute('''
 #         CREATE TABLE IF NOT EXISTS webhook.payloads (
