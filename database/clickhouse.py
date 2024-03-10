@@ -377,8 +377,6 @@ def create_table():
         raise
 
 def insert_payload(payload):
-
-
     id = str(uuid4())
     sender = payload['data']['from']
     recipient = payload['data']['to'][0]
@@ -394,7 +392,7 @@ def insert_payload(payload):
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to insert hardcoded data: {e}")
+        logger.error(f"Failed to insert  data: {e}")
         raise
     
     # sender = payload["data"].get("from")
