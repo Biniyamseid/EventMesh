@@ -10,13 +10,13 @@ from database.clickhouse import get_all_payloads, query_payloads
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 class EmailData(BaseModel):
     created_at: str
     email_id: str
-    from_: str
+    from_: str = Field(..., alias="from")
     subject: str
     to: List[str]
 
