@@ -5,13 +5,32 @@ from typing import Optional
 from fastapi import FastAPI, Request, HTTPException
 from celery.exceptions import Retry
 from celery_worker import process_webhook_payload
-
+from fastapi import Query
+from database.clickhouse import get_all_payloads, query_payloads
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "welcome to resend webhook service"}
+
+def validate_payload(payload):
+    required_keys = ["created_at", "data", "type"]
+    data_keys = ["created_at", "email_id", "from", "subject", "to"]
+
+    if not isinstance(payload, dict):
+        return False
+
+    if not all(key in payload for key in required_keys):
+        return False
+
+    if not isinstance(payload["data"], dict):
+        return False
+
+    if not all(key in payload["data"] for key in data_keys):
+        return False
+
+    return True
 
 @app.post("/webhook/resend")
 async def receive_resend_notification(request: Request):
@@ -27,17 +46,14 @@ async def receive_resend_notification(request: Request):
     payload = await request.json()
     logger.info(f"WebhookPayload received: {payload}")
     try:
-        if payload:
+        if payload and validate_payload(payload):
             process_webhook_payload.delay(payload)
         else:
-            return {"status": "empty payload", "received": "false"}
+            return {"status": "false"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
     return {"status": "received"}
-
-from fastapi import Query
-from database.clickhouse import get_all_payloads, query_payloads
 
 @app.get("/query")
 async def query_payloads_endpoint(
