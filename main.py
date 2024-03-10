@@ -31,20 +31,16 @@ class WebhookPayload(BaseModel):
 def read_root():
     return {"Hello": "welcome to resend webhook service"}
 
-def validate_payload(payload):
+def validate_payload(payload: WebhookPayload):
     required_keys = ["created_at", "data", "type"]
-    data_keys = ["created_at", "email_id", "from_", "subject", "to"]  # change "from" to "from_"
+    data_keys = ["created_at", "email_id", "from_", "from","subject", "to"]
 
-    if not isinstance(payload, dict):
+    payload_dict = payload.model_dump()
+
+    if not all(key in payload_dict for key in required_keys):
         return False
 
-    if not all(key in payload for key in required_keys):
-        return False
-
-    if not isinstance(payload["data"], dict):
-        return False
-
-    if not all(key in payload["data"] for key in data_keys):
+    if not all(key in payload_dict["data"] for key in data_keys):
         return False
 
     return True
