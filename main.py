@@ -7,8 +7,24 @@ from celery.exceptions import Retry
 from celery_worker import process_webhook_payload
 from fastapi import Query
 from database.clickhouse import get_all_payloads, query_payloads
+from typing import List
+from pydantic import BaseModel, Field
+from datetime import datetime
+
 app = FastAPI()
 logger = logging.getLogger(__name__)
+
+class EmailData(BaseModel):
+    created_at: datetime = Field(..., example="2024-03-10T11:41:30.456Z")
+    email_id: str = Field(..., example="f3043bc9-f183-4435-a378-907562703ea9")
+    from_: str = Field(..., example="onboarding@resend.dev")
+    subject: str = Field(..., example="Hello World")
+    to: List[str] = Field(..., example=["ethioartificialintelligence@gmail.com"])
+
+class WebhookPayload(BaseModel):
+    created_at: datetime = Field(..., example="2024-03-10T11:41:31.198Z")
+    data: EmailData
+    type: str = Field(..., example="email.delivered")
 
 @app.get("/")
 def read_root():
@@ -32,7 +48,7 @@ def validate_payload(payload):
 
     return True
 
-@app.post("/webhook/resend")
+@app.post("/webhook/resend",response_model=WebhookPayload)
 async def receive_resend_notification(request: Request):
     """
     Receive a webhook payload and process it asynchronously.
