@@ -377,6 +377,7 @@ def create_table():
         raise
 
 def insert_payload(payload):
+    return payload
     sender = payload["data"].get("from")
     recipient = payload["data"].get("to")[0] if payload["data"].get("to") else None
     subject = payload["data"].get("subject")
