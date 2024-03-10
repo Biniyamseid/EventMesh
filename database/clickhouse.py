@@ -377,29 +377,48 @@ def create_table():
         raise
 
 def insert_payload(payload):
-    return payload
-    sender = payload["data"].get("from")
-    recipient = payload["data"].get("to")[0] if payload["data"].get("to") else None
-    subject = payload["data"].get("subject")
-    email_id = payload["data"].get("email_id")
-    event_type = payload.get("type")
 
-    if not sender:
-        raise ValueError("Payload must include a 'from' value")
 
-    id = uuid4()
-    created_at = datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
+    id = str(uuid4())
+    sender = payload['data']['from']
+    recipient = payload['data']['to'][0]
+    subject = payload['data']['subject']
+    email_id = payload['data']['email_id']
+    event_type = payload['type']
+    created_at = datetime.strptime(payload['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
 
     try:
-        logger.info("Inserting payload...")
         client.execute(
             'INSERT INTO webhook.payloads (id, sender, recipient, subject, email_id, event_type, created_at) VALUES',
             [(id, sender, recipient, subject, email_id, event_type, created_at)]
         )
-        logger.info("Payload inserted successfully.")
+        logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to insert payload: {e}")
+        logger.error(f"Failed to insert hardcoded data: {e}")
         raise
+    
+    # sender = payload["data"].get("from")
+    # recipient = payload["data"].get("to")[0] if payload["data"].get("to") else None
+    # subject = payload["data"].get("subject")
+    # email_id = payload["data"].get("email_id")
+    # event_type = payload.get("type")
+
+    # if not sender:
+    #     raise ValueError("Payload must include a 'from' value")
+
+    # id = uuid4()
+    # created_at = datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
+
+    # try:
+    #     logger.info("Inserting payload...")
+    #     client.execute(
+    #         'INSERT INTO webhook.payloads (id, sender, recipient, subject, email_id, event_type, created_at) VALUES',
+    #         [(id, sender, recipient, subject, email_id, event_type, created_at)]
+    #     )
+    #     logger.info("Payload inserted successfully.")
+    # except errors.Error as e:
+    #     logger.error(f"Failed to insert payload: {e}")
+    #     raise
 
 def insert_h_data():
     payload = {
