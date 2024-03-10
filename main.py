@@ -73,7 +73,7 @@ async def receive_resend_notification(payload: WebhookPayload):
         if payload and validate_payload(payload):
             process_webhook_payload.delay(payload)
         else:
-            return {"status": "false"}
+            return {"status": "false", "detail": "Invalid payload"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail="Failed to process payload")
