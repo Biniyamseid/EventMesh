@@ -344,7 +344,8 @@ from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger(__name__)
-client = Client('clickhouse')
+# client = Client('clickhouse')
+client = Client('resend_webhook_clickhouse')
 
 def create_database():
     try:
