@@ -77,7 +77,7 @@ async def receive_resend_notification(payload: WebhookPayload):
     t = "out of the block"
     try:
         # payload = await request.json()
-        payload = payload
+        payload = payload.model_dump()
     except Exception:
         return {"status": "false", "detail": "Invalid JSON payload"}
 
