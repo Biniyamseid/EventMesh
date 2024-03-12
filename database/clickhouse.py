@@ -26,19 +26,6 @@ def create_table():
     """
     try:
         logger.info("Creating table...")
-        # client.execute('''
-        #     CREATE TABLE IF NOT EXISTS webhook.payloads (
-        #         id UUID,
-        #         sender String,
-        #         recipient String,
-        #         subject String,
-        #         email_id String,
-        #         event_type String,
-        #         created_at DateTime('UTC')
-        #     ) ENGINE = MergeTree()
-        #     ORDER BY created_at
-        # ''')
-        # client.execute('DROP TABLE IF EXISTS webhook.payloads')
         client.execute('''
     CREATE TABLE IF NOT EXISTS webhook.payloads (
         id UUID,
