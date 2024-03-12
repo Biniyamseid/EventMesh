@@ -1,7 +1,3 @@
-
-
-
-
 from fastapi import FastAPI
 from celery.result import AsyncResult
 from celery_worker import process_webhook_payload, app as celery_app
