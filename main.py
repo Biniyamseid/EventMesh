@@ -59,7 +59,9 @@ async def receive_resend_notification(request: Request):
         if payload and validate_payload(payload):
             insert_payload(payload)
             task = process_webhook_payload.delay(payload)
-            return {"status": "received", "task_id": task.id}
+            # return {"status": "received", "task_id": task.id}
+            return {"status": "received"}
+
         else:
             return {"status": "false"}
     except Exception as e:
@@ -68,14 +70,14 @@ async def receive_resend_notification(request: Request):
     return {"status": "received"}
 
 
-@app.get("/task/{task_id}")
-async def get_task_result(task_id: str):
-    logger.info("**get_task_result called")
-    result = AsyncResult(task_id, app=celery_app)
-    if result.ready():
-        return {"status": result.status, "result": result.result}
-    else:
-        return {"status": result.status}
+# @app.get("/task/{task_id}")
+# async def get_task_result(task_id: str):
+#     logger.info("**get_task_result called")
+#     result = AsyncResult(task_id, app=celery_app)
+#     if result.ready():
+#         return {"status": result.status, "result": result.result}
+#     else:
+#         return {"status": result.status}
 
 @app.get("/query")
 async def query_payloads_endpoint(
