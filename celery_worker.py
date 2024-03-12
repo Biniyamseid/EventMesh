@@ -1,16 +1,4 @@
-# from celery import Celery
-# from database.clickhouse import insert_payload, create_database, create_table
 
-# # app = Celery('tasks', broker='redis://localhost:6379/0')
-# app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhook_redis_server:6379/0')
-
-# # Create database and table when Celery worker starts
-# create_database()
-# create_table()
-
-# @app.task
-# def process_webhook_payload(payload):
-#     insert_payload(payload)
 
 
 from celery import Celery
@@ -87,3 +75,18 @@ def process_webhook_payload(self, payload):
 #     except Exception as e:
 #         self.update_state(state='FAILURE', meta=str(e))
 #         raise
+
+
+# from celery import Celery
+# from database.clickhouse import insert_payload, create_database, create_table
+
+# # app = Celery('tasks', broker='redis://localhost:6379/0')
+# app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhook_redis_server:6379/0')
+
+# # Create database and table when Celery worker starts
+# create_database()
+# create_table()
+
+# @app.task
+# def process_webhook_payload(payload):
+#     insert_payload(payload)

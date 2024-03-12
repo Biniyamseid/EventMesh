@@ -441,6 +441,9 @@ def insert_payload(payload):
     #     raise
 
 def insert_h_data():
+    """
+    this function inserts hardcoded data into the payloads table for testing purposes.
+    """
     payload = {
         "created_at": "2024-03-10T11:41:31.198Z",
         "data": {
