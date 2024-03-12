@@ -168,36 +168,7 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
         logger.info(f"Failed to query payloads: {e}")
         raise
 
-#_____________________-
 
-# def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None):
-#     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
-#     params = {'sender': sender}
-
-#     if recipient:
-#         query += " AND recipient = %(recipient)s"
-#         params['recipient'] = recipient
-
-#     if status:
-#         query += " AND event_type = %(status)s"
-#         params['status'] = status
-
-#     if start_date:
-#         query += " AND created_at >= %(start_date)s"
-#         params['start_date'] = start_date
-
-#     if end_date:
-#         query += " AND created_at <= %(end_date)s"
-#         params['end_date'] = end_date
-
-#     try:
-#         logger.info("Querying payloads...")
-#         result = client.execute(query, params)
-#         logger.info("Payloads queried successfully.")
-#         return result
-#     except errors.Error as e:
-#         logger.error(f"Failed to query payloads: {e}")
-#         raise
 
 def get_all_payloads():
     try:
