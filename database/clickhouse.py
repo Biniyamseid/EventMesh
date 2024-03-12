@@ -254,12 +254,12 @@
 
 # ----------------3------------------
 
-from clickhouse_driver import Client
-from uuid import uuid4
-from datetime import datetime, timezone
+# from clickhouse_driver import Client
+# from uuid import uuid4
+# from datetime import datetime, timezone
 
-# client = Client('localhost')
-client = Client('resend_webhook_clickhouse')
+# # client = Client('localhost')
+# client = Client('resend_webhook_clickhouse')
 # client = Client('clickhouse')
 # client = Client('clickhouse')
 
@@ -357,23 +357,43 @@ def create_database():
         raise
 
 def create_table():
+    """
+     you should consider adding indexes on the sender and event_type columns to improve the performance of the queries.
+     This can be done by modifying the CREATE TABLE statement to include indexes:
+    
+    """
     try:
         logger.info("Creating table...")
+        # client.execute('''
+        #     CREATE TABLE IF NOT EXISTS webhook.payloads (
+        #         id UUID,
+        #         sender String,
+        #         recipient String,
+        #         subject String,
+        #         email_id String,
+        #         event_type String,
+        #         created_at DateTime('UTC')
+        #     ) ENGINE = MergeTree()
+        #     ORDER BY created_at
+        # ''')
         client.execute('''
-            CREATE TABLE IF NOT EXISTS webhook.payloads (
-                id UUID,
-                sender String,
-                recipient String,
-                subject String,
-                email_id String,
-                event_type String,
-                created_at DateTime('UTC')
-            ) ENGINE = MergeTree()
-            ORDER BY created_at
-        ''')
+    CREATE TABLE IF NOT EXISTS webhook.payloads (
+        id UUID,
+        sender String,
+        recipient String,
+        subject String,
+        email_id String,
+        event_type String,
+        created_at DateTime('UTC'),
+        INDEX sender_idx (sender) TYPE bloom_filter() GRANULARITY 1,
+        INDEX event_type_idx (event_type) TYPE bloom_filter() GRANULARITY 1
+    ) ENGINE = MergeTree()
+    ORDER BY (sender, event_type, created_at)
+    SETTINGS index_granularity = 8192
+''')
         logger.info("Table created successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to create table: {e}")
+        logger.info(f"Failed to create table: {e}")
         raise
 
 def insert_payload(payload):
@@ -392,7 +412,7 @@ def insert_payload(payload):
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to insert  data: {e}")
+        logger.info(f"Failed to insert  data: {e}")
         raise
     
     # sender = payload["data"].get("from")
@@ -427,7 +447,7 @@ def insert_h_data():
             "from": "onboarding@resend.dev",
             "subject": "data",
             "to": [
-                "ethioartificialintelligence@gmail.com"
+                "example@example.com"
             ]
         },
         "type": "email.delivered"
@@ -448,7 +468,7 @@ def insert_h_data():
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
-        logger.error(f"Failed to insert  data: {e}")
+        logger.info(f"Failed to insert  data: {e}")
         raise
 
 
@@ -460,10 +480,13 @@ def get_payloads():
         logger.info("Payloads retrieved successfully.")
         return result
     except errors.Error as e:
-        logger.error(f"Failed to get payloads: {e}")
+        logger.info(f"Failed to get payloads: {e}")
         raise
 
-def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None):
+# _____________________2
+# ... (other imports and functions)
+
+def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None, pagination_start=0, pagination_end=15):
     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
     params = {'sender': sender}
 
@@ -476,12 +499,21 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
         params['status'] = status
 
     if start_date:
-        query += " AND created_at >= %(start_date)s"
-        params['start_date'] = start_date
+        # Assuming start_date is already a datetime object
+        start_timestamp = int(start_date.timestamp())
+        query += " AND created_at >= toDateTime(%(start_timestamp)s)"
+        params['start_timestamp'] = start_timestamp
 
     if end_date:
-        query += " AND created_at <= %(end_date)s"
-        params['end_date'] = end_date
+        # Assuming end_date is already a datetime object
+        end_timestamp = int(end_date.timestamp())
+        query += " AND created_at <= toDateTime(%(end_timestamp)s)"
+        params['end_timestamp'] = end_timestamp
+
+    # Add ORDER BY and LIMIT with OFFSET for pagination
+    query += " ORDER BY created_at DESC LIMIT %(pagination_start)s, %(pagination_end)s"
+    params['pagination_start'] = pagination_start
+    params['pagination_end'] = pagination_end - pagination_start  # Adjust because LIMIT takes the count, not the end index
 
     try:
         logger.info("Querying payloads...")
@@ -489,8 +521,39 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
         logger.info("Payloads queried successfully.")
         return result
     except errors.Error as e:
-        logger.error(f"Failed to query payloads: {e}")
+        logger.info(f"Failed to query payloads: {e}")
         raise
+
+#_____________________-
+
+# def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None):
+#     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
+#     params = {'sender': sender}
+
+#     if recipient:
+#         query += " AND recipient = %(recipient)s"
+#         params['recipient'] = recipient
+
+#     if status:
+#         query += " AND event_type = %(status)s"
+#         params['status'] = status
+
+#     if start_date:
+#         query += " AND created_at >= %(start_date)s"
+#         params['start_date'] = start_date
+
+#     if end_date:
+#         query += " AND created_at <= %(end_date)s"
+#         params['end_date'] = end_date
+
+#     try:
+#         logger.info("Querying payloads...")
+#         result = client.execute(query, params)
+#         logger.info("Payloads queried successfully.")
+#         return result
+#     except errors.Error as e:
+#         logger.error(f"Failed to query payloads: {e}")
+#         raise
 
 def get_all_payloads():
     try:
@@ -499,5 +562,5 @@ def get_all_payloads():
         logger.info("All payloads retrieved successfully.")
         return result
     except errors.Error as e:
-        logger.error(f"Failed to get all payloads: {e}")
+        logger.info(f"Failed to get all payloads: {e}")
         raise

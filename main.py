@@ -1,4 +1,115 @@
 
+
+
+
+from fastapi import FastAPI
+from celery.result import AsyncResult
+from celery_worker import process_webhook_payload, app as celery_app
+from datetime import datetime
+import logging
+from typing import Optional
+from fastapi import FastAPI, Request, HTTPException
+from celery.exceptions import Retry
+from celery_worker import process_webhook_payload
+from fastapi import Query
+from database.clickhouse import get_all_payloads, query_payloads
+from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
+app = FastAPI()
+logger = logging.getLogger(__name__)
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+def validate_payload(payload):
+    required_keys = ["created_at", "data", "type"]
+    data_keys = ["created_at", "email_id", "from", "subject", "to"]
+    payload = payload
+    if not isinstance(payload, dict):
+        return False
+
+    if not all(key in payload for key in required_keys):
+        return False
+
+    if not isinstance(payload["data"], dict):
+        return False
+
+    if not all(key in payload["data"] for key in data_keys):
+        return False
+
+    return True
+
+@app.post("/webhook/resend")
+async def receive_resend_notification(request: Request):
+    """
+    Receive a webhook payload and process it asynchronously.
+
+    Args:
+        payload (WebhookPayload): The webhook payload to process.
+
+    Returns:
+        dict: A dictionary with a single key "status" and value "received".
+    """
+    try:
+        payload = await request.json()
+        logger.info(f"WebhookPayload received: {payload}")
+    except Exception as e:
+        return {"status": "false", "detail": "Invalid JSON payload"}
+    try:
+        if payload and validate_payload(payload):
+            insert_payload(payload)
+            task = process_webhook_payload.delay(payload)
+            return {"status": "received", "task_id": task.id}
+        else:
+            return {"status": "false"}
+    except Exception as e:
+        logger.error(f"Failed to process payload: {e}")
+        raise HTTPException(status_code=500, detail= f"Failed to process payload{e}")
+    return {"status": "received"}
+
+
+@app.get("/task/{task_id}")
+async def get_task_result(task_id: str):
+    logger.info("**get_task_result called")
+    result = AsyncResult(task_id, app=celery_app)
+    if result.ready():
+        return {"status": result.status, "result": result.result}
+    else:
+        return {"status": result.status}
+
+@app.get("/query")
+async def query_payloads_endpoint(
+    sender: str,
+    recipient: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    pagination_start: Optional[int] = Query(0),
+    pagination_end: Optional[int] = Query(15)
+):
+    results = query_payloads(sender, recipient, status, start_date, end_date, pagination_start, pagination_end)
+    return {"payloads": results}
+
+
+
+# @app.get("/query")
+# async def query_payloads_endpoint(
+#     sender: str,
+#     recipient: Optional[str] = Query(None),
+#     status: Optional[str] = Query(None),
+#     start_date: Optional[datetime] = Query(None),
+#     end_date: Optional[datetime] = Query(None)
+# ):
+#     results = query_payloads(sender, recipient, status, start_date, end_date)
+#     return {"payloads": results}
+
+@app.get("/query/all")
+async def query_all_payloads_endpoint():
+    results = get_all_payloads()
+    return {"payloads": results}
+
+
+
 # # from datetime import datetime
 # # import logging
 # # from typing import Optional
@@ -203,100 +314,3 @@
 # async def query_all_payloads_endpoint():
 #     results = get_all_payloads()
 #     return {"payloads": results}
-
-
-
-from fastapi import FastAPI
-from celery.result import AsyncResult
-from celery_worker import process_webhook_payload, app as celery_app
-from datetime import datetime
-import logging
-from typing import Optional
-from fastapi import FastAPI, Request, HTTPException
-from celery.exceptions import Retry
-from celery_worker import process_webhook_payload
-from fastapi import Query
-from database.clickhouse import get_all_payloads, query_payloads
-from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
-app = FastAPI()
-logger = logging.getLogger(__name__)
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-def validate_payload(payload):
-    required_keys = ["created_at", "data", "type"]
-    data_keys = ["created_at", "email_id", "from", "subject", "to"]
-    payload = payload
-    if not isinstance(payload, dict):
-        return False
-
-    if not all(key in payload for key in required_keys):
-        return False
-
-    if not isinstance(payload["data"], dict):
-        return False
-
-    if not all(key in payload["data"] for key in data_keys):
-        return False
-
-    return True
-
-@app.post("/webhook/resend")
-async def receive_resend_notification(request: Request):
-    """
-    Receive a webhook payload and process it asynchronously.
-
-    Args:
-        payload (WebhookPayload): The webhook payload to process.
-
-    Returns:
-        dict: A dictionary with a single key "status" and value "received".
-    """
-    try:
-        payload = await request.json()
-        logger.info(f"WebhookPayload received: {payload}")
-    except Exception as e:
-        return {"status": "false", "detail": "Invalid JSON payload"}
-    try:
-        if payload and validate_payload(payload):
-            insert_payload(payload)
-            task = process_webhook_payload.delay(payload)
-            return {"status": "received", "task_id": task.id}
-        else:
-            return {"status": "false"}
-    except Exception as e:
-        logger.error(f"Failed to process payload: {e}")
-        raise HTTPException(status_code=500, detail= f"Failed to process payload{e}")
-    return {"status": "received"}
-
-
-@app.get("/task/{task_id}")
-async def get_task_result(task_id: str):
-    logger.info("**get_task_result called")
-    result = AsyncResult(task_id, app=celery_app)
-    if result.ready():
-        return {"status": result.status, "result": result.result}
-    else:
-        return {"status": result.status}
-
-
-
-
-
-@app.get("/query")
-async def query_payloads_endpoint(
-    sender: str,
-    recipient: Optional[str] = Query(None),
-    status: Optional[str] = Query(None),
-    start_date: Optional[datetime] = Query(None),
-    end_date: Optional[datetime] = Query(None)
-):
-    results = query_payloads(sender, recipient, status, start_date, end_date)
-    return {"payloads": results}
-
-@app.get("/query/all")
-async def query_all_payloads_endpoint():
-    results = get_all_payloads()
-    return {"payloads": results}
