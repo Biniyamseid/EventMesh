@@ -1,4 +1,3 @@
-
 from clickhouse_driver import Client, errors
 from uuid import uuid4
 from datetime import datetime, timezone
