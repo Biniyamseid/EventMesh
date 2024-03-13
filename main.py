@@ -136,57 +136,6 @@ async def query_all_payloads_endpoint():
 
 
 
-# # @app.get("/")
-# # def read_root():
-# #     return {"Hello": "welcome to resend webhook service"}
-
-# # # def validate_payload(payload: WebhookPayload):
-# # #     required_keys = ["created_at", "data", "type"]
-# # #     data_keys = ["created_at", "email_id", "from_", "from","subject", "to"]
-
-# # #     payload_dict = payload.model_dump()
-
-# # #     if not all(key in payload_dict for key in required_keys):
-# # #         return False
-
-# # #     if not all(key in payload_dict["data"] for key in data_keys):
-# # #         return False
-
-# # #     return True
-
-# # # def validate_payload(payload: WebhookPayload):
-# # #     required_keys = ["created_at", "data", "type"]
-# # #     data_keys = ["created_at", "email_id", "from_","from", "subject", "to"]
-
-# # #     # payload_dict = payload.model_dump()
-# # #     payload_dict = payload
-
-# # #     missing_keys = [key for key in required_keys if key not in payload_dict]
-# # #     if missing_keys:
-# # #         return f"Missing required keys in payload: {', '.join(missing_keys)}"
-
-# # #     missing_data_keys = [key for key in data_keys if key not in payload_dict["data"]]
-# # #     if missing_data_keys:
-# # #         return f"Missing required keys in payload['data']: {', '.join(missing_data_keys)}"
-
-# # #     return True
-
-# # def validate_payload(payload: WebhookPayload):
-# #     required_keys = ["created_at", "data", "type"]
-# #     data_keys = ["created_at", "email_id", "from", "subject", "to"]  # change "from_" to "from"
-
-# #     payload_dict = payload.dict()
-
-# #     missing_keys = [key for key in required_keys if key not in payload_dict]
-# #     if missing_keys:
-# #         return f"Missing required keys in payload: {', '.join(missing_keys)}"
-
-# #     missing_data_keys = [key for key in data_keys if key not in payload_dict["data"]]
-# #     if missing_data_keys:
-# #         return f"Missing required keys in payload['data']: {', '.join(missing_data_keys)}"
-
-# #     return True
-
 
 
 
