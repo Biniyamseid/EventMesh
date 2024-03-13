@@ -119,7 +119,6 @@ def get_payloads():
         raise
 
 
-
 def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None, pagination_start=0, pagination_end=15):
     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
     params = {'sender': sender}
@@ -135,13 +134,13 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
     if start_date:
         # Assuming start_date is already a datetime object
         start_timestamp = int(start_date.timestamp())
-        query += " AND created_at >= toDateTime(%(start_timestamp)s)"
+        query += " AND created_at >= %(start_timestamp)s"
         params['start_timestamp'] = start_timestamp
 
     if end_date:
         # Assuming end_date is already a datetime object
         end_timestamp = int(end_date.timestamp())
-        query += " AND created_at <= toDateTime(%(end_timestamp)s)"
+        query += " AND created_at <= %(end_timestamp)s"
         params['end_timestamp'] = end_timestamp
 
     # Add ORDER BY and LIMIT with OFFSET for pagination
@@ -157,6 +156,7 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
     except errors.Error as e:
         logger.info(f"Failed to query payloads: {e}")
         raise
+
 
 
 
