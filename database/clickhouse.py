@@ -9,7 +9,7 @@ client = Client('resend_webhook_clickhouse')
 
 def create_database():
     try:
-        client.execute('DROP DATABASE IF EXISTS webhook')
+        # client.execute('DROP DATABASE IF EXISTS webhook')
         logger.info("Creating database...")
         client.execute('CREATE DATABASE IF NOT EXISTS webhook')
         logger.info("Database created successfully.")
@@ -27,7 +27,7 @@ def create_table():
     """
     try:
         logger.info("Creating table...")
-        client.execute("DROP TABLE IF EXISTS webhook.payloads")
+        # client.execute("DROP TABLE IF EXISTS webhook.payloads")
         client.execute('''
                        
     CREATE TABLE IF NOT EXISTS webhook.payloads (
