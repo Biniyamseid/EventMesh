@@ -189,36 +189,6 @@ async def query_all_payloads_endpoint():
 
 
 
-# # @app.post("/webhook/resend")
-# # async def receive_resend_notification(payload: WebhookPayload):
-# #     """
-# #     Receive a webhook payload and process it asynchronously.
-
-# #     Args:
-# #         payload (WebhookPayload): The webhook payload to process.
-
-# #     Returns:
-# #         dict: A dictionary with a single key "status" and value "received".
-# #     """
-# #     # t = "out of the block"
-# #     try:
-# #         # payload = await request.json()
-# #         payload = payload.dict()
-# #     except Exception:
-# #         return {"status": "false", "detail": "Invalid JSON payload"}
-
-# #     logger.info(f"WebhookPayload received: {payload}")
-# #     try:
-# #         if payload and validate_payload(payload):
-# #             # t= "inside the block"
-# #             process_webhook_payload.delay(payload)
-            
-# #         else:
-# #             return {"status": "false", "detail": "Invalid payload"}
-# #     except Exception as e:
-# #         logger.error(f"Failed to process payload: {e}")
-# #         raise HTTPException(status_code=500, detail=f"Failed to process payload: {e,t}")
-# #     return {"status": "received"}
 
 
 
