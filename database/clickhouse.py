@@ -55,11 +55,12 @@ def insert_payload(payload):
     email_id = payload['data']['email_id']
     event_type = payload['type']
     created_at = datetime.strptime(payload['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+    created_at_unix = int(created_at.timestamp())  # Convert to Unix timestamp
 
     try:
         client.execute(
             'INSERT INTO webhook.payloads (id, sender, recipient, subject, email_id, event_type, created_at) VALUES',
-            [(id, sender, recipient, subject, email_id, event_type, created_at)]
+            [(id, sender, recipient, subject, email_id, event_type, created_at_unix)]
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
@@ -118,6 +119,45 @@ def get_payloads():
 
 # _____________________2
 # ... (other imports and functions)
+#1
+# def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None, pagination_start=0, pagination_end=15):
+#     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
+#     params = {'sender': sender}
+
+#     if recipient:
+#         query += " AND recipient = %(recipient)s"
+#         params['recipient'] = recipient
+
+#     if status:
+#         query += " AND event_type = %(status)s"
+#         params['status'] = status
+
+#     if start_date:
+#         # Assuming start_date is already a datetime object
+#         start_timestamp = int(start_date.timestamp())
+#         query += " AND created_at >= toDateTime(%(start_timestamp)s)"
+#         params['start_timestamp'] = start_timestamp
+
+#     if end_date:
+#         # Assuming end_date is already a datetime object
+#         end_timestamp = int(end_date.timestamp())
+#         query += " AND created_at <= toDateTime(%(end_timestamp)s)"
+#         params['end_timestamp'] = end_timestamp
+
+#     # Add ORDER BY and LIMIT with OFFSET for pagination
+#     query += " ORDER BY created_at DESC LIMIT %(pagination_start)s, %(pagination_end)s"
+#     params['pagination_start'] = pagination_start
+#     params['pagination_end'] = pagination_end - pagination_start  # Adjust because LIMIT takes the count, not the end index
+
+#     try:
+#         logger.info("Querying payloads...")
+#         result = client.execute(query, params)
+#         logger.info("Payloads queried successfully.")
+#         return result
+#     except errors.Error as e:
+#         logger.info(f"Failed to query payloads: {e}")
+#         raise
+
 
 def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None, pagination_start=0, pagination_end=15):
     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
@@ -134,13 +174,13 @@ def query_payloads(sender, recipient=None, status=None, start_date=None, end_dat
     if start_date:
         # Assuming start_date is already a datetime object
         start_timestamp = int(start_date.timestamp())
-        query += " AND created_at >= toDateTime(%(start_timestamp)s)"
+        query += " AND created_at >= %(start_timestamp)s"
         params['start_timestamp'] = start_timestamp
 
     if end_date:
         # Assuming end_date is already a datetime object
         end_timestamp = int(end_date.timestamp())
-        query += " AND created_at <= toDateTime(%(end_timestamp)s)"
+        query += " AND created_at <= %(end_timestamp)s"
         params['end_timestamp'] = end_timestamp
 
     # Add ORDER BY and LIMIT with OFFSET for pagination
