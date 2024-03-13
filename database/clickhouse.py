@@ -113,8 +113,7 @@ def get_payloads():
         logger.info(f"Failed to get payloads: {e}")
         raise
 
-# _____________________2
-# ... (other imports and functions)
+
 
 def query_payloads(sender, recipient=None, status=None, start_date=None, end_date=None, pagination_start=0, pagination_end=15):
     query = "SELECT * FROM webhook.payloads WHERE sender = %(sender)s"
