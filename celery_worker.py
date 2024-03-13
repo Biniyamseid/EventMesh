@@ -1,5 +1,5 @@
 from celery import Celery
-from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
+from database.clickhouse import insert_payload, create_database, create_table,insert_payload
 from celery import Celery
 from celery.schedules import crontab
 from resend_webhook.database.clickhouse import client
@@ -26,30 +26,30 @@ def process_webhook_payload(self, payload):
 
 
 
-@app.task
-def cleanup_database():
-    try:
-        # Calculate the Unix timestamp for 60 days ago
-        threshold = int((datetime.now(timezone.utc) - timedelta(days=60)).timestamp())
+# @app.task
+# def cleanup_database():
+#     try:
+#         # Calculate the Unix timestamp for 60 days ago
+#         threshold = int((datetime.now(timezone.utc) - timedelta(days=60)).timestamp())
         
-        # Execute the query to delete old records
-        delete_query = "ALTER TABLE webhook.payloads DELETE WHERE created_at < %(threshold)s"
-        client.execute(delete_query, {'threshold': threshold})
+#         # Execute the query to delete old records
+#         delete_query = "ALTER TABLE webhook.payloads DELETE WHERE created_at < %(threshold)s"
+#         client.execute(delete_query, {'threshold': threshold})
         
-        logger.info("Database cleanup successful.")
-    except Exception as e:
-        logger.error(f"Database cleanup failed: {e}")
-        raise
+#         logger.info("Database cleanup successful.")
+#     except Exception as e:
+#         logger.error(f"Database cleanup failed: {e}")
+#         raise
 
 
 
 
 
-# Then schedule for the cleanup_database task
-app.conf.beat_schedule = {
-    'cleanup-database-every-60-days': {
-        'task': 'resend_webhook.celery_worker.cleanup_database',
-        'schedule': timedelta(days=60),
-    },
-}
+# # Then schedule for the cleanup_database task
+# app.conf.beat_schedule = {
+#     'cleanup-database-every-60-days': {
+#         'task': 'resend_webhook.celery_worker.cleanup_database',
+#         'schedule': timedelta(days=60),
+#     },
+# }
 
