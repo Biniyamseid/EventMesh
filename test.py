@@ -14,7 +14,8 @@ params = {
 
 # Make the GET request to the endpoint
 response = requests.get('https://resend-webhook-fastapi.gj54va.easypanel.host/query?sender=onboarding@resend.dev', params=params)
-# https://resend-webhook-fastapi.gj54va.easypanel.host/query?sender=onboarding@resend.dev
+
+
 
 # Print the response JSON
 print(response.json())

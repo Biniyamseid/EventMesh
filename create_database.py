@@ -1,6 +1,6 @@
 import sqlite3
 
-# conn = sqlite3.connect('database.db')
+
 conn = sqlite3.connect('/app/database.db')
 print("Opened database successfully")
 
@@ -8,12 +8,3 @@ conn.execute('CREATE TABLE IF NOT EXISTS my_table (id INTEGER PRIMARY KEY, name 
 print("Table created successfully")
 
 conn.close()
-# import sqlite3
-
-# conn = sqlite3.connect('/app/results.sqlite3')
-# print("Opened database successfully")
-
-# conn.execute('CREATE TABLE IF NOT EXISTS my_table (id INTEGER PRIMARY KEY, name TEXT)')
-# print("Table created successfully")
-
-# conn.close()
