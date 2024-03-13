@@ -17,6 +17,8 @@ def create_database():
         logger.error(f"Failed to create database: {e}")
         raise
 
+    "update the database row,date"
+
 def create_table():
     """
      you should consider adding indexes on the sender and event_type columns to improve the performance of the queries.
