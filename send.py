@@ -1,5 +1,7 @@
 import resend
 
+# resend.api_key = "re_VzippoMR_NP1rCWL44UVeAnbAQA4mXxQo"
+# https://resend-webhook-fastapi.gj54va.easypanel.host/webhook/resend
 resend.api_key = "re_8ngxrF3m_3yBQBRVrbQsGDVkcBUWbjdgy"
 
 r = resend.Emails.send({
