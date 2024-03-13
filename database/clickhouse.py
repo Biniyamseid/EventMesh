@@ -35,7 +35,7 @@ def create_table():
         subject String,
         email_id String,
         event_type String,
-        created_at DateTime('UTC'),
+        created_at Int32,  -- Changed from DateTime('UTC') to Int32
         INDEX sender_idx (sender) TYPE bloom_filter() GRANULARITY 1,
         INDEX event_type_idx (event_type) TYPE bloom_filter() GRANULARITY 1
     ) ENGINE = MergeTree()
@@ -92,11 +92,12 @@ def insert_h_data():
     email_id = payload['data']['email_id']
     event_type = payload['type']
     created_at = datetime.strptime(payload['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+    created_at_unix = int(created_at.timestamp())  # Convert to Unix timestamp
 
     try:
         client.execute(
             'INSERT INTO webhook.payloads (id, sender, recipient, subject, email_id, event_type, created_at) VALUES',
-            [(id, sender, recipient, subject, email_id, event_type, created_at)]
+            [(id, sender, recipient, subject, email_id, event_type, created_at_unix)]
         )
         logger.info("Hardcoded data inserted successfully.")
     except errors.Error as e:
