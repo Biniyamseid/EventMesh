@@ -223,19 +223,4 @@ async def query_all_payloads_endpoint():
 
 
 
-# # @app.get("/query")
-# # async def query_payloads_endpoint(
-# #     sender: str,
-# #     recipient: Optional[str] = Query(None),
-# #     status: Optional[str] = Query(None),
-# #     start_date: Optional[datetime] = Query(None),
-# #     end_date: Optional[datetime] = Query(None)
-# # ):
-# #     results = query_payloads(sender, recipient, status, start_date, end_date)
-# #     return {"payloads": results}
-
-# # @app.get("/query/all")
-# # async def query_all_payloads_endpoint():
-# #     results = get_all_payloads()
-# #     return {"payloads": results}
 
