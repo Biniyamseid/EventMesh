@@ -10,9 +10,9 @@ services:
     depends_on:
       - redis
       - resend_webhook_clickhouse
-    beat:
+  beat:
       build: .
-      command: celery -A resend_webhook.celery_worker beat --loglevel=info --schedule=/app/celerybeat-schedule
+      command: celery -A celery_worker.app beat --loglevel=info --schedule=/app/celerybeat-schedule
       volumes:
         - ./results.sqlite3:/app/results.sqlite3
         - ./celerybeat-schedule:/app/celerybeat-schedule
