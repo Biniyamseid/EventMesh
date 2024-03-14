@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir fastapi uvicorn celery[redis] clickhouse-driver
 RUN chmod 664 /app/database.db
 
 RUN chmod +x ./run.sh
+RUN chmod +x ./start_celery_beat.sh
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000

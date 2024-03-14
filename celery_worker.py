@@ -7,8 +7,43 @@ app = Celery('tasks', broker='redis://redis:6379/0', backend='db+sqlite:////app/
 app.conf.broker_connection_retry_on_startup = True
 from database.clickhouse import client
 from celery.schedules import crontab
-create_database()
-create_table()
+
+import time
+
+MAX_RETRIES = 5
+RETRY_DELAY = 10  # seconds
+
+def create_database_with_retry():
+    for attempt in range(MAX_RETRIES):
+        try:
+            create_database()
+            break  # Success, exit the loop
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                time.sleep(RETRY_DELAY)  # Wait before retrying
+            else:
+                raise  # Re-raise the exception if max retries reached
+
+def create_table_with_retry():
+    for attempt in range(MAX_RETRIES):
+        try:
+            create_table()
+            break  # Success, exit the loop
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                time.sleep(RETRY_DELAY)  # Wait before retrying
+            else:
+                raise  # Re-raise the exception if max retries reached
+
+# Replace direct calls to create_database() and create_table() with the retry versions
+create_database_with_retry()
+create_table_with_retry()
+
+
+
+
+# create_database()
+# create_table()
 
 @app.task(bind=True)
 def process_webhook_payload(self, payload):
