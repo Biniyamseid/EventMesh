@@ -109,20 +109,20 @@ from celery.result import AsyncResult
 from celery.result import AsyncResult
 from fastapi import HTTPException
 
-@app.get("/query/all")
-async def query_all_payloads_endpoint():
-    task = fetch_all_payloads_task.delay()
+# @app.get("/query/all")
+# async def query_all_payloads_endpoint():
+#     task = fetch_all_payloads_task.delay()
     
-    try:
-        # Wait for the task to finish with a timeout (e.g., 10 seconds)
-        result = AsyncResult(task.id).get(timeout=10)
-    except TimeoutError:
-        raise HTTPException(status_code=504, detail="Request timed out")
-    except Exception as e:
-        # Handle other exceptions, such as task execution errors
-        raise HTTPException(status_code=500, detail=str(e))
+#     try:
+#         # Wait for the task to finish with a timeout (e.g., 10 seconds)
+#         result = AsyncResult(task.id).get(timeout=10)
+#     except TimeoutError:
+#         raise HTTPException(status_code=504, detail="Request timed out")
+#     except Exception as e:
+#         # Handle other exceptions, such as task execution errors
+#         raise HTTPException(status_code=500, detail=str(e))
     
-    return {"payloads": result}
+#     return {"payloads": result}
 
 @app.get("/tasks/{task_id}")
 async def get_task_result(task_id: str):
