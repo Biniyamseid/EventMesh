@@ -111,20 +111,8 @@ async def query_payloads_endpoint(
 
 
 
-# @app.get("/query/all")
-# async def query_all_payloads_endpoint():
-#     results = get_all_payloads()
-#     return {"payloads": results}
-
-from celery.result import AsyncResult
-
 @app.get("/query/all")
 async def query_all_payloads_endpoint():
-    # Dispatch the task
-    task = fetch_all_payloads_task.delay()
-    
-    # Wait for the task to finish and get the result
-    # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
-    result = AsyncResult(task.id).get()
-    
-    return {"payloads": result}
+    results = get_all_payloads()
+    return {"payloads": results}
+
