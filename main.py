@@ -18,34 +18,10 @@ def read_root():
     return {"Hello": "World"}
 
 
-def validate_payload(payload: dict) -> bool:
-    """
-    Validates the structure and content of a webhook payload.
-
-    This function checks if the payload is a dictionary, contains the required top-level keys,
-    and if the 'data' key contains a dictionary with the required data keys.
-
-    Args:
-        payload (dict): The webhook payload to validate.
-
-    Returns:
-        bool: True if the payload is valid, False otherwise.
-
-    Required top-level keys:
-        - 'created_at': The timestamp of when the event was created.
-        - 'data': A dictionary containing the event data.
-        - 'type': The type of the event.
-
-    Required keys in 'data':
-        - 'created_at': The timestamp of when the email was created.
-        - 'email_id': The unique identifier for the email.
-        - 'from': The email address of the sender.
-        - 'subject': The subject of the email.
-        - 'to': The recipient(s) of the email.
-    """
+def validate_payload(payload):
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
-
+    payload = payload
     if not isinstance(payload, dict):
         return False
 
@@ -81,9 +57,9 @@ async def receive_resend_notification(request: Request):
     try:
         if payload and validate_payload(payload):
             # insert_payload(payload)
-            return process_webhook_payload.delay(payload)
+            task = process_webhook_payload.delay(payload)
             # return {"status": "received", "task_id": task.id}
-            # return {"status": "received"}
+            return {"status": "received"}
 
         else:
             return {"status": "false"}
