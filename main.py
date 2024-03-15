@@ -81,7 +81,7 @@ async def receive_resend_notification(request: Request):
     try:
         if payload and validate_payload(payload):
             # insert_payload(payload)
-            task = process_webhook_payload.delay(payload)
+            return process_webhook_payload.delay(payload)
             # return {"status": "received", "task_id": task.id}
             # return {"status": "received"}
 
@@ -90,7 +90,7 @@ async def receive_resend_notification(request: Request):
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail= f"Failed to process payload{e}")
-    return {"status": "received"}
+    # return {"status": "received"}
 
 
 
