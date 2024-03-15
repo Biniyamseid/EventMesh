@@ -1,6 +1,5 @@
 import sqlite3
 
-# conn = sqlite3.connect('database.db')
 conn = sqlite3.connect('/app/database.db')
 print("Opened database successfully")
 
