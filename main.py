@@ -19,9 +19,33 @@ def read_root():
 
 
 def validate_payload(payload):
+    """
+    Validates the structure and content of a webhook payload.
+
+    This function checks if the payload is a dictionary, contains the required top-level keys,
+    and if the 'data' key is a dictionary with the required data keys.
+
+    Args:
+        payload (dict): The webhook payload to validate.
+
+    Returns:
+        bool: True if the payload is valid, False otherwise.
+
+    Required top-level keys:
+        - 'created_at': The timestamp when the event was created.
+        - 'data': A dictionary containing the event data.
+        - 'type': The type of the event.
+
+    Required data keys:
+        - 'created_at': The timestamp when the email was created.
+        - 'email_id': The unique identifier for the email.
+        - 'from': The email address of the sender.
+        - 'subject': The subject of the email.
+        - 'to': The recipient(s) of the email.
+    """
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
-    payload = payload
+
     if not isinstance(payload, dict):
         return False
 
@@ -56,10 +80,9 @@ async def receive_resend_notification(request: Request):
         return {"status": "false", "detail": "Invalid JSON payload"}
     try:
         if payload and validate_payload(payload):
-            # insert_payload(payload)
+            insert_payload(payload)
             task = process_webhook_payload.delay(payload)
-            return {"status": "received", "task_id": task.id}
-            # return {"status": "received"}
+            return {"status": "received"}
 
         else:
             return {"status": "false"}
@@ -95,67 +118,13 @@ async def query_payloads_endpoint(
 
 from celery.result import AsyncResult
 
-# @app.get("/query/all")
-# async def query_all_payloads_endpoint():
-#     # Dispatch the task
-#     task = fetch_all_payloads_task.delay()
-    
-#     # Wait for the task to finish and get the result
-#     # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
-#     result = AsyncResult(task.id).get()
-    
-#     return {"payloads": result}
-
-from celery.result import AsyncResult
-from fastapi import HTTPException
-
-# @app.get("/query/all")
-# async def query_all_payloads_endpoint():
-#     task = fetch_all_payloads_task.delay()
-    
-#     try:
-#         # Wait for the task to finish with a timeout (e.g., 10 seconds)
-#         result = AsyncResult(task.id).get(timeout=10)
-#     except TimeoutError:
-#         raise HTTPException(status_code=504, detail="Request timed out")
-#     except Exception as e:
-#         # Handle other exceptions, such as task execution errors
-#         raise HTTPException(status_code=500, detail=str(e))
-    
-#     return {"payloads": result}
-
-@app.get("/tasks/{task_id}")
-async def get_task_result(task_id: str):
-    result = AsyncResult(task_id)
-    
-    if not result.ready():
-        return {"status": "pending"}
-    try:
-        data = result.get(timeout=1)  # Short timeout, since we're just fetching the result
-        return {"status": "completed", "data": data}
-    except TimeoutError:
-        return {"status": "timeout"}
-    except Exception as e:
-        return {"status": "error", "detail": str(e)}
-    
-
 @app.get("/query/all")
 async def query_all_payloads_endpoint():
+    # Dispatch the task
     task = fetch_all_payloads_task.delay()
-    # Return the task ID to the client
-    return {"task_id": task.id}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    # Wait for the task to finish and get the result
+    # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
+    result = AsyncResult(task.id).get()
+    
+    return {"payloads": result}

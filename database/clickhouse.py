@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 # client = Client('clickhouse')
 client = Client('resend_webhook_clickhouse')
 
+
 def create_database():
     try:
         # client.execute('DROP DATABASE IF EXISTS webhook')

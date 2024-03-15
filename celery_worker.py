@@ -67,17 +67,6 @@ def process_webhook_payload(self, payload):
             # Handle the case when max retries have been exceeded
             raise e
 
-# @app.task(bind=True)
-# def process_webhook_payload(self, payload):
-#     try:
-#         self.update_state(state='STARTED')
-#         insert_payload(payload)
-#         self.update_state(state='SUCCESS')
-#         return {"status": "success"}
-#     except Exception as e:
-#         self.update_state(state='FAILURE', meta=str(e))
-#         raise
-
 
 @app.task
 def cleanup_old_records():
