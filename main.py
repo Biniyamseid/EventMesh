@@ -110,9 +110,34 @@ async def query_payloads_endpoint(
 
 
 
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from starlette.status import HTTP_401_UNAUTHORIZED
+import secrets
+
+app = FastAPI()
+
+security = HTTPBasic()
+
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "admin")
+    correct_password = secrets.compare_digest(credentials.password, "secret")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 @app.get("/query/all")
-async def query_all_payloads_endpoint():
+async def query_all_payloads_endpoint(username: str = Depends(get_current_username)):
     results = get_all_payloads()
     return {"payloads": results}
+
+
+# @app.get("/query/all")
+# async def query_all_payloads_endpoint():
+#     results = get_all_payloads()
+#     return {"payloads": results}
 
