@@ -44,6 +44,7 @@ create_table_with_retry()
 @app.task(bind=True, max_retries=10, default_retry_delay=19)  # Configure retries here
 def process_webhook_payload(self, payload):
     try:
+        return {"status": "success"}
         self.update_state(state='STARTED')
         insert_payload(payload)  # Attempt to insert the payload
         self.update_state(state='SUCCESS')
