@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from celery.result import AsyncResult
-from celery_worker import process_webhook_payload, app as celery_app
+from celery_worker import fetch_all_payloads_task, process_webhook_payload, app as celery_app
 from datetime import datetime
 import logging
 from typing import Optional
@@ -88,10 +88,41 @@ async def query_payloads_endpoint(
 
 
 
+# @app.get("/query/all")
+# async def query_all_payloads_endpoint():
+#     results = get_all_payloads()
+#     return {"payloads": results}
+
+from celery.result import AsyncResult
+
 @app.get("/query/all")
 async def query_all_payloads_endpoint():
-    results = get_all_payloads()
-    return {"payloads": results}
+    # Dispatch the task
+    task = fetch_all_payloads_task.delay()
+    
+    # Wait for the task to finish and get the result
+    # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
+    result = AsyncResult(task.id).get()
+    
+    return {"payloads": result}
+
+from celery.result import AsyncResult
+from fastapi import HTTPException
+
+# @app.get("/query/all")
+# async def query_all_payloads_endpoint():
+#     task = fetch_all_payloads_task.delay()
+    
+#     try:
+#         # Wait for the task to finish with a timeout (e.g., 10 seconds)
+#         result = AsyncResult(task.id).get(timeout=10)
+#     except TimeoutError:
+#         raise HTTPException(status_code=504, detail="Request timed out")
+#     except Exception as e:
+#         # Handle other exceptions, such as task execution errors
+#         raise HTTPException(status_code=500, detail=str(e))
+    
+#     return {"payloads": result}
 
 
 

@@ -39,6 +39,15 @@ def create_table_with_retry():
 create_database_with_retry()
 create_table_with_retry()
 
+@app.task
+def fetch_all_payloads_task():
+    try:
+        results = get_all_payloads()
+        return results
+    except Exception as e:
+        # Log the error or handle it as needed
+        raise e
+
 
 
 @app.task(bind=True, max_retries=10, default_retry_delay=19)  # Configure retries here
@@ -53,7 +62,7 @@ def process_webhook_payload(self, payload):
         try:
             # Retry the task
             self.retry(exc=e)
-        except MaxRetriesExceededError:
+        except Exception as e:
             # Handle the case when max retries have been exceeded
             raise e
 
