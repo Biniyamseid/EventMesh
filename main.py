@@ -137,8 +137,5 @@ async def query_all_payloads_endpoint(username: str = Depends(get_current_userna
     return {"payloads": results}
 
 
-# @app.get("/query/all")
-# async def query_all_payloads_endpoint():
-#     results = get_all_payloads()
-#     return {"payloads": results}
+
 
