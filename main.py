@@ -17,10 +17,35 @@ logger = logging.getLogger(__name__)
 def read_root():
     return {"Hello": "World"}
 
-def validate_payload(payload):
+
+def validate_payload(payload: dict) -> bool:
+    """
+    Validates the structure and content of a webhook payload.
+
+    This function checks if the payload is a dictionary, contains the required top-level keys,
+    and if the 'data' key contains a dictionary with the required data keys.
+
+    Args:
+        payload (dict): The webhook payload to validate.
+
+    Returns:
+        bool: True if the payload is valid, False otherwise.
+
+    Required top-level keys:
+        - 'created_at': The timestamp of when the event was created.
+        - 'data': A dictionary containing the event data.
+        - 'type': The type of the event.
+
+    Required keys in 'data':
+        - 'created_at': The timestamp of when the email was created.
+        - 'email_id': The unique identifier for the email.
+        - 'from': The email address of the sender.
+        - 'subject': The subject of the email.
+        - 'to': The recipient(s) of the email.
+    """
     required_keys = ["created_at", "data", "type"]
     data_keys = ["created_at", "email_id", "from", "subject", "to"]
-    payload = payload
+
     if not isinstance(payload, dict):
         return False
 
@@ -34,6 +59,8 @@ def validate_payload(payload):
         return False
 
     return True
+
+
 
 @app.post("/webhook/resend")
 async def receive_resend_notification(request: Request):
@@ -53,7 +80,7 @@ async def receive_resend_notification(request: Request):
         return {"status": "false", "detail": "Invalid JSON payload"}
     try:
         if payload and validate_payload(payload):
-            insert_payload(payload)
+            # insert_payload(payload)
             task = process_webhook_payload.delay(payload)
             # return {"status": "received", "task_id": task.id}
             return {"status": "received"}
