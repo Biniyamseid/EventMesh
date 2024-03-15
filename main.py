@@ -59,14 +59,14 @@ async def receive_resend_notification(request: Request):
             # insert_payload(payload)
             task = process_webhook_payload.delay(payload)
             # return {"status": "received", "task_id": task.id}
-            return {"status": "received"}
+            # return {"status": "received"}
 
         else:
             return {"status": "false"}
     except Exception as e:
         logger.error(f"Failed to process payload: {e}")
         raise HTTPException(status_code=500, detail= f"Failed to process payload{e}")
-    return {"status": "received"}
+    return {"status": "done"}
 
 
 
