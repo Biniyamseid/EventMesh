@@ -124,6 +124,27 @@ async def query_all_payloads_endpoint():
     
     return {"payloads": result}
 
+@app.get("/tasks/{task_id}")
+async def get_task_result(task_id: str):
+    result = AsyncResult(task_id)
+    
+    if not result.ready():
+        return {"status": "pending"}
+    try:
+        data = result.get(timeout=1)  # Short timeout, since we're just fetching the result
+        return {"status": "completed", "data": data}
+    except TimeoutError:
+        return {"status": "timeout"}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+    
+
+@app.get("/query/all")
+async def query_all_payloads_endpoint():
+    task = fetch_all_payloads_task.delay()
+    # Return the task ID to the client
+    return {"task_id": task.id}
+
 
 
 
