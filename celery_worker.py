@@ -41,17 +41,32 @@ create_table_with_retry()
 
 
 
-
-@app.task(bind=True)
+@app.task(bind=True, max_retries=10, default_retry_delay=19)  # Configure retries here
 def process_webhook_payload(self, payload):
     try:
         self.update_state(state='STARTED')
-        insert_payload(payload)
+        insert_payload(payload)  # Attempt to insert the payload
         self.update_state(state='SUCCESS')
         return {"status": "success"}
     except Exception as e:
         self.update_state(state='FAILURE', meta=str(e))
-        raise
+        try:
+            # Retry the task
+            self.retry(exc=e)
+        except MaxRetriesExceededError:
+            # Handle the case when max retries have been exceeded
+            raise e
+
+# @app.task(bind=True)
+# def process_webhook_payload(self, payload):
+#     try:
+#         self.update_state(state='STARTED')
+#         insert_payload(payload)
+#         self.update_state(state='SUCCESS')
+#         return {"status": "success"}
+#     except Exception as e:
+#         self.update_state(state='FAILURE', meta=str(e))
+#         raise
 
 
 @app.task
@@ -61,13 +76,14 @@ def cleanup_old_records():
     client.execute(delete_query, {'threshold': threshold})
 
 
-app.conf.task_time_limit = 30  # seconds
-app.conf.task_soft_time_limit = 25  # seconds
-app.conf.worker_concurrency = 4  # Number of worker processes/threads
-app.conf.task_annotations = {'my_task': {'rate_limit': '10/m'}}
-app.conf.worker_prefetch_multiplier = 1  # Default is 4
-app.conf.broker_transport_options = {'visibility_timeout': 3600}  # seconds
-app.conf.event_queue_expires = 60  # seconds
+app.conf.update(
+    task_time_limit=30,
+    worker_concurrency=4,
+    task_annotations={'my_task': {'rate_limit': '10/m'}},
+    worker_prefetch_multiplier=1,
+    broker_transport_options={'visibility_timeout': 3600},
+    event_queue_expires=60
+)
 
 app.conf.beat_schedule = {
     'cleanup-every-60-days': {
