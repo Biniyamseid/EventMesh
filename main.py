@@ -95,34 +95,34 @@ async def query_payloads_endpoint(
 
 from celery.result import AsyncResult
 
-@app.get("/query/all")
-async def query_all_payloads_endpoint():
-    # Dispatch the task
-    task = fetch_all_payloads_task.delay()
+# @app.get("/query/all")
+# async def query_all_payloads_endpoint():
+#     # Dispatch the task
+#     task = fetch_all_payloads_task.delay()
     
-    # Wait for the task to finish and get the result
-    # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
-    result = AsyncResult(task.id).get()
+#     # Wait for the task to finish and get the result
+#     # Note: In a production environment, consider adding a timeout or handling long-running tasks differently
+#     result = AsyncResult(task.id).get()
     
-    return {"payloads": result}
+#     return {"payloads": result}
 
 from celery.result import AsyncResult
 from fastapi import HTTPException
 
-# @app.get("/query/all")
-# async def query_all_payloads_endpoint():
-#     task = fetch_all_payloads_task.delay()
+@app.get("/query/all")
+async def query_all_payloads_endpoint():
+    task = fetch_all_payloads_task.delay()
     
-#     try:
-#         # Wait for the task to finish with a timeout (e.g., 10 seconds)
-#         result = AsyncResult(task.id).get(timeout=10)
-#     except TimeoutError:
-#         raise HTTPException(status_code=504, detail="Request timed out")
-#     except Exception as e:
-#         # Handle other exceptions, such as task execution errors
-#         raise HTTPException(status_code=500, detail=str(e))
+    try:
+        # Wait for the task to finish with a timeout (e.g., 10 seconds)
+        result = AsyncResult(task.id).get(timeout=10)
+    except TimeoutError:
+        raise HTTPException(status_code=504, detail="Request timed out")
+    except Exception as e:
+        # Handle other exceptions, such as task execution errors
+        raise HTTPException(status_code=500, detail=str(e))
     
-#     return {"payloads": result}
+    return {"payloads": result}
 
 
 
