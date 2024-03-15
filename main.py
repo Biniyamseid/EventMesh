@@ -10,8 +10,17 @@ from celery_worker import process_webhook_payload
 from fastapi import Query
 from database.clickhouse import get_all_payloads, query_payloads
 from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from starlette.status import HTTP_401_UNAUTHORIZED
+import secrets
+
+
+security = HTTPBasic()
 app = FastAPI()
 logger = logging.getLogger(__name__)
+
+
 
 @app.get("/")
 def read_root():
@@ -110,14 +119,6 @@ async def query_payloads_endpoint(
 
 
 
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from starlette.status import HTTP_401_UNAUTHORIZED
-import secrets
-
-app = FastAPI()
-
-security = HTTPBasic()
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "admin")
