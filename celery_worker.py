@@ -3,7 +3,7 @@ from datetime import datetime
 from celery import Celery
 from database.clickhouse import insert_payload, create_database, create_table,insert_h_data,insert_payload
 # app = Celery('tasks', broker='redis://default:8c3e85e077fd42b5264c@resend_webhook_redis_server:6379/0',backend='db+sqlite:////app/results.db')
-app = Celery('tasks', broker='redis://redis:6379/0', backend='db+sqlite:////app/results.db')
+app = Celery('tasks', broker='redis://redis:6379', backend='db+sqlite:////app/results.db')
 app.conf.broker_connection_retry_on_startup = True
 from database.clickhouse import client
 from celery.schedules import crontab
