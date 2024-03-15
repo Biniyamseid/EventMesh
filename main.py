@@ -83,7 +83,7 @@ async def receive_resend_notification(request: Request):
             # insert_payload(payload)
             task = process_webhook_payload.delay(payload)
             # return {"status": "received", "task_id": task.id}
-            return {"status": "received"}
+            # return {"status": "received"}
 
         else:
             return {"status": "false"}
