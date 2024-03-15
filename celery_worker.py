@@ -92,7 +92,7 @@ app.conf.update(
     task_annotations={'my_task': {'rate_limit': '10/m'}},
     worker_prefetch_multiplier=1,
     broker_transport_options={'visibility_timeout': 3600},
-    event_queue_expires=60
+    event_queue_expires=3600
 )
 
 app.conf.beat_schedule = {
