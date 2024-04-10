@@ -2,7 +2,7 @@
 
 ## Project Description 📝
 
-The FastAPI Webhook Service is a robust and scalable solution designed to handle real-time email notification webhooks from Resend. Built with FastAPI, it leverages the asynchronous processing power of Celery and Redis to manage notifications efficiently, while storing each event as a unique row in ClickHouse. This service ensures high throughput and reliable storage for webhook payloads, making it an ideal choice for applications requiring real-time email event tracking and processing.
+The FastAPI Webhook Service is a robust and scalable solution designed to handle real-time email notification webhooks. Built with FastAPI, it leverages the asynchronous processing power of Celery and Redis to manage notifications efficiently, while storing each event as a unique row in ClickHouse. This service ensures high throughput and reliable storage for webhook payloads, making it an ideal choice for applications requiring real-time email event tracking and processing.
 
 ### Features
 
