@@ -1,4 +1,4 @@
-# FastAPI Webhook Service for Resend Notifications 🚀
+# FastAPI Webhook Service for Notifications 🚀
 
 ## Project Description 📝
 
